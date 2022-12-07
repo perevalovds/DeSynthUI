@@ -1,9 +1,10 @@
 #include "ofApp.h"
-#include "ofxWindows.h"
+#include "ofxDeSynthUI.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofSetWindowShape(200, 100);
+	ofSetFrameRate(60);
 
 }
 
@@ -14,21 +15,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	float time = ofGetElapsedTimef();
-	if (time - time_ >= 1) {
-		time_ = time;
-		string window_class = "Notepad";
-		char c = k + '0';
-		bool result = ofxWindows::SendKeyboardByWindowClass(window_class, c);
-		if (result) {
-			cout << "Sent " << c << " to " << window_class << endl;
-		}
-		else {
-			cout << "Can't sent symbol, may be window with class " << window_class << " doesn't exists"<< endl;
-			cout << "To check this, run unitilies/winlister" << endl;
-		}
-		k = (k+1) % 10;
-	}
+	
 
 }
 

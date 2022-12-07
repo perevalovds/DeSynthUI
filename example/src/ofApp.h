@@ -24,6 +24,4 @@ public:
 	void dragEvent(ofDragInfo dragInfo);
 	void gotMessage(ofMessage msg);
 
-	float time_ = 0;
-	int k = 0;
 };
