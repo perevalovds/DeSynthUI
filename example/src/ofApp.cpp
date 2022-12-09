@@ -1,21 +1,26 @@
 #include "ofApp.h"
 #include "ofxDeSynthUI.h"
 
+DeUI::UI* UI = nullptr;
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofSetWindowShape(200, 100);
 	ofSetFrameRate(60);
 
+	UI = new DeUI::UI();
+
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
+	UI->update();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	
+	ofBackground(0);
+
+	UI->draw();
 
 }
 
