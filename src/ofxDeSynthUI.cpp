@@ -48,26 +48,47 @@ namespace DeUI {
 	}
 
 	//--------------------------------------------------------------
-	void UI::draw() {
+	void UI::draw(float W, float H) {
+		float scl = min(W / W_, H / H_);
+		float w1 = W_ * scl;
+		float h1 = H_ * scl;
+
+		ofPushMatrix();
+		ofTranslate((W - w1) / 2, (H - h1) / 2);
+		ofScale(scl, scl);
 		for (auto c : controls_) {
 			c->draw();
 		}
+		ofPopMatrix();
 	}
 
 	//--------------------------------------------------------------
 	void Control::draw() {
-
+		ofSetColor(128);
+		ofNoFill();
+		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
 	}
 	void Fader::draw() {
+		ofSetColor(128);
+		ofNoFill();
+		ofDrawEllipse(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
 
 	}
 	void Button::draw() {
+		ofSetColor(128);
+		ofNoFill();
+		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
 
 	}
 	void Led::draw() {
-
+		ofSetColor(128);
+		ofNoFill();
+		ofDrawEllipse(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
 	}
 	void Screen::draw() {
+		ofSetColor(128);
+		ofFill();
+		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
 
 	}
 

@@ -8,7 +8,7 @@
 #define SCREEN(NAME, TITLE, X, Y, W, H)
 #endif
 #ifndef PANEL_SIZE
-#define PANEL_SIZE(W, H)
+#define PANEL_SIZE(Width, Height)
 #endif
 
 PANEL_SIZE(1000, 1000)

@@ -4,7 +4,7 @@
 DeUI::UI* UI = nullptr;
 //--------------------------------------------------------------
 void ofApp::setup(){
-	ofSetWindowShape(200, 100);
+	ofSetWindowShape(1024, 768);
 	ofSetFrameRate(60);
 
 	UI = new DeUI::UI();
@@ -20,7 +20,9 @@ void ofApp::update(){
 void ofApp::draw(){
 	ofBackground(0);
 
-	UI->draw();
+	float W = ofGetWidth();
+	float H = ofGetHeight();
+	UI->draw(W, H);
 
 }
 

@@ -64,7 +64,7 @@ namespace DeUI {
 		~UI();
 		void setup();
 		void update();
-		void draw();
+		void draw(float W, float H);
 
 		void register_control(Control* c);
 
@@ -73,6 +73,7 @@ namespace DeUI {
 #define BUTTON(NAME, TITLE, X, Y, W, H) Button* ui##NAME; int NAME = 0;
 #define LED(NAME, TITLE, X, Y, D) Led* ui##NAME; int NAME = 0;
 #define SCREEN(NAME, TITLE, X, Y, W, H) Screen* ui##NAME;
+#define PANEL_SIZE(Width, Height) float W_ = Width; float H_ = Height;
 #include "DefUI.h"
 
 	protected:
