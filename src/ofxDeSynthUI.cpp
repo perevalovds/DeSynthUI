@@ -59,6 +59,10 @@ namespace DeUI {
 		for (auto c : controls_) {
 			c->draw();
 		}
+
+		ofSetColor(128);
+		ofNoFill();
+		ofDrawRectangle(0, 0, W_, H_);
 		ofPopMatrix();
 	}
 
@@ -71,7 +75,7 @@ namespace DeUI {
 	void Fader::draw() {
 		ofSetColor(128);
 		ofNoFill();
-		ofDrawEllipse(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
+		ofDrawEllipse(pos.x, pos.y - size.y / 2, size.x, size.y);
 
 	}
 	void Button::draw() {
@@ -83,12 +87,12 @@ namespace DeUI {
 	void Led::draw() {
 		ofSetColor(128);
 		ofNoFill();
-		ofDrawEllipse(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
+		ofDrawEllipse(pos.x, pos.y - size.y / 2, size.x, size.y);
 	}
 	void Screen::draw() {
 		ofSetColor(128);
 		ofFill();
-		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
+		ofDrawRectangle(pos.x, pos.y, size.x, size.y);
 
 	}
 
