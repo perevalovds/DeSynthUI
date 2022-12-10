@@ -39,10 +39,14 @@ namespace DeUI {
 
 	//--------------------------------------------------------------
 	void UI::setup() {
-#define FONT_DEF(FontFile, FontSize, FontColor) string font_file = FontFile; int font_size = FontSize; font_color_ = FontColor;
+#define FONT_DEF(FontFile, FontSize, FontColor, ShiftY) \
+	string font_file = FontFile; \
+	int font_size = FontSize; \
+	font_.color = FontColor; \
+	font_.shiftY = ShiftY;
 #include "DefUI.h"
 
-		font_.load(font_file, font_size);
+		font_.font.load(font_file, font_size);
 	}
 
 	//--------------------------------------------------------------
@@ -60,43 +64,45 @@ namespace DeUI {
 		ofTranslate((W - w1) / 2, (H - h1) / 2);
 		ofScale(scl, scl);
 		for (auto c : controls_) {
-			c->draw();
+			c->draw(font_);
 		}
 
 		ofSetColor(128);
 		ofNoFill();
 		ofDrawRectangle(0, 0, W_, H_);
-		
-		ofSetColor(font_color_);
-		font_.drawString("Abd", 30, 30);
 
 		ofPopMatrix();
 	}
 
 	//--------------------------------------------------------------
-	void Control::draw() {
-		ofSetColor(128);
-		ofNoFill();
-		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
+	void Font::draw(const string& text, float x, float y)
+	{
+		ofSetColor(color);
+		font.drawString(text, x, y - shiftY);
 	}
-	void Fader::draw() {
+
+	//--------------------------------------------------------------
+	void Control::draw(Font& font) {
+
+	}
+	void Fader::draw(Font& font) {
 		ofSetColor(128);
 		ofNoFill();
 		ofDrawEllipse(pos.x, pos.y - size.y / 2, size.x, size.y);
-
+		font.draw(title, pos.x, pos.y - size.y / 2);
 	}
-	void Button::draw() {
+	void Button::draw(Font& font) {
 		ofSetColor(128);
 		ofNoFill();
 		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
 
 	}
-	void Led::draw() {
+	void Led::draw(Font& font) {
 		ofSetColor(128);
 		ofNoFill();
 		ofDrawEllipse(pos.x, pos.y - size.y / 2, size.x, size.y);
 	}
-	void Screen::draw() {
+	void Screen::draw(Font& font) {
 		ofSetColor(128);
 		ofFill();
 		ofDrawRectangle(pos.x, pos.y, size.x, size.y);

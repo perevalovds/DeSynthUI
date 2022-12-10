@@ -8,6 +8,12 @@
 
 namespace DeUI {
 	class UI;
+	struct Font {
+		ofTrueTypeFont font;
+		ofColor color;
+		float shiftY = 0;
+		void draw(const string& text, float x, float y);
+	};
 	struct ControlData {
 		ControlData() {}
 		ControlData(UI* Parent, string Title, float X, float Y, float W, float H)
@@ -27,7 +33,7 @@ namespace DeUI {
 		string title;
 		glm::vec2 pos;
 		glm::vec2 size;
-		virtual void draw();
+		virtual void draw(Font& font);
 	};
 
 	class Fader : public Control {
@@ -35,27 +41,27 @@ namespace DeUI {
 		Fader(ControlData data, float *Value) : Control(data), value(Value) {}
 		virtual ~Fader() {}
 		float* value = nullptr;
-		virtual void draw();
+		virtual void draw(Font& font);
 	};
 	class Button : public Control {
 	public:
 		Button(ControlData data, int *Value) : Control(data), value(Value) {}
 		virtual ~Button() {}
 		int* value = 0;
-		virtual void draw();
+		virtual void draw(Font& font);
 	};
 	class Led : public Control {
 	public:
 		Led(ControlData data, int *Value) : Control(data), value(Value) {}
 		virtual ~Led() {}
 		int* value = 0;
-		virtual void draw();
+		virtual void draw(Font& font);
 	};
 	class Screen : public Control {
 	public:
 		Screen(ControlData data) : Control(data) {}
 		virtual ~Screen() {}
-		virtual void draw();
+		virtual void draw(Font& font);
 	};
 
 	class UI {
@@ -78,8 +84,7 @@ namespace DeUI {
 
 	protected:
 		vector<Control*> controls_;
-		ofTrueTypeFont font_;
-		ofColor font_color_;
+		Font font_;
 	};
 
 }
