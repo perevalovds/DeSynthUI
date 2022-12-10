@@ -8,6 +8,7 @@ void ofApp::setup(){
 	ofSetFrameRate(60);
 
 	UI = new DeUI::UI();
+	UI->setup();
 
 }
 

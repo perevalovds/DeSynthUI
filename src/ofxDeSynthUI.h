@@ -78,6 +78,8 @@ namespace DeUI {
 
 	protected:
 		vector<Control*> controls_;
+		ofTrueTypeFont font_;
+		ofColor font_color_;
 	};
 
 }

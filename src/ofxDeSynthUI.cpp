@@ -39,7 +39,10 @@ namespace DeUI {
 
 	//--------------------------------------------------------------
 	void UI::setup() {
+#define FONT_DEF(FontFile, FontSize, FontColor) string font_file = FontFile; int font_size = FontSize; font_color_ = FontColor;
 #include "DefUI.h"
+
+		font_.load(font_file, font_size);
 	}
 
 	//--------------------------------------------------------------
@@ -63,6 +66,10 @@ namespace DeUI {
 		ofSetColor(128);
 		ofNoFill();
 		ofDrawRectangle(0, 0, W_, H_);
+		
+		ofSetColor(font_color_);
+		font_.drawString("Abd", 30, 30);
+
 		ofPopMatrix();
 	}
 

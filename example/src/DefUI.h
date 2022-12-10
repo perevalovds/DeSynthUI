@@ -10,8 +10,12 @@
 #ifndef PANEL_SIZE
 #define PANEL_SIZE(Width, Height)
 #endif
+#ifndef FONT_DEF
+#define FONT_DEF(FontFile, FontSize, FontColor)
+#endif
 
 PANEL_SIZE(400, 600)
+FONT_DEF("fonts/verdana.ttf", 16, ofColor(128))
 
 SCREEN(SCR, "", 50, 50, 300, 100)
 
