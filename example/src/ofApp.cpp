@@ -29,32 +29,32 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-	UI->onEvent({ DeUI::EventType::keyPressed, key });
+	UI->onEvent({ DeUI::EventType::keyPressed, glm::vec2(0,0), 0, key });
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-	UI->onEvent({ DeUI::EventType::keyReleased, key });
+	UI->onEvent({ DeUI::EventType::keyReleased, glm::vec2(0,0), 0, key });
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-	UI->onEvent({ DeUI::EventType::mouseMoved, x, y});
+	UI->onEvent({ DeUI::EventType::mouseMoved, glm::vec2(x, y), 0, 0 });
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-	UI->onEvent({ DeUI::EventType::mouseDragged, x, y, button });
+	UI->onEvent({ DeUI::EventType::mouseDragged, glm::vec2(x, y), button, 0 });
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-	UI->onEvent({ DeUI::EventType::mousePressed, x, y, button });
+	UI->onEvent({ DeUI::EventType::mousePressed, glm::vec2(x, y), button, 0 });
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-	UI->onEvent({ DeUI::EventType::mouseReleased, x, y, button });
+	UI->onEvent({ DeUI::EventType::mouseReleased, glm::vec2(x, y), button, 0 });
 }
 
 //--------------------------------------------------------------

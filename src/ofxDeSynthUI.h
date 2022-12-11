@@ -18,9 +18,10 @@ namespace DeUI {
 	};
 	struct Event {
 		EventType type;
-		int value1 = 0;
-		int value2 = 0;
-		int value3 = 0;
+		glm::vec2 pos = glm::vec2(0, 0);
+		int button = 0;
+		int key = 0;
+		bool isMouseEvent() const { return type >= EventType::mouseMoved; }
 	};
 	struct Font {
 		ofTrueTypeFont font;
@@ -65,6 +66,7 @@ namespace DeUI {
 		int maxval = 10;
 		glm::vec2 value_to_vec(int v);
 		virtual bool onEvent(const Event& event);
+		bool clicked = false;
 	};
 	class Button : public ControlWithValue {
 	public:
@@ -111,6 +113,12 @@ namespace DeUI {
 	protected:
 		vector<Control*> controls_;
 		Font font_;
+
+		float scale_ = 1;
+		glm::vec2 transp_ = glm::vec2(0, 0);
+
+		// test
+		glm::vec2 click_ = glm::vec2(0, 0);
 	};
 
 }

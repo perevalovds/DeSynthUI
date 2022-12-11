@@ -47,8 +47,14 @@ namespace DeUI {
 	}
 
 	void UI::onEvent(const Event& event) {
+		Event ev = event;
+		if (event.isMouseEvent()) {
+			ev.pos /= scale_;
+			ev.pos -= transp_;
+			click_ = ev.pos;
+		}
 		for (auto c : controls_) {
-			if (c->onEvent(event)) {
+			if (c->onEvent(ev)) {
 				return;
 			}
 		}
@@ -56,13 +62,14 @@ namespace DeUI {
 
 	//--------------------------------------------------------------
 	void UI::draw(float W, float H) {
-		float scl = min(W / W_, H / H_);
-		float w1 = W_ * scl;
-		float h1 = H_ * scl;
+		float scale_ = min(W / W_, H / H_);
+		float w1 = W_ * scale_;
+		float h1 = H_ * scale_;
+		transp_ = glm::vec2((W - w1) / 2, (H - h1) / 2);
 
 		ofPushMatrix();
-		ofTranslate((W - w1) / 2, (H - h1) / 2);
-		ofScale(scl, scl);
+		ofTranslate(transp_);
+		ofScale(scale_, scale_);
 		for (auto c : controls_) {
 			c->draw(font_);
 		}
@@ -70,6 +77,10 @@ namespace DeUI {
 		ofSetColor(128);
 		ofNoFill();
 		ofDrawRectangle(0, 0, W_, H_);
+
+		// test
+		ofSetColor(0, 255, 0);
+		ofDrawCircle(click_, 5);
 
 		ofPopMatrix();
 	}
@@ -89,7 +100,7 @@ namespace DeUI {
 		ofSetColor(color);
 		auto box = font.getStringBoundingBox(text, 0, 0);
 		y = (centerY) ? y - box.y / 2 : y - shiftY;
-		font.drawString(text, x-box.width / 2, y);
+		font.drawString(text, x - box.width / 2, y);
 	}
 
 	void Control::draw(Font& font) {
@@ -97,7 +108,7 @@ namespace DeUI {
 	}
 
 	void Fader::draw(Font& font) {
-		ofSetColor(128);
+		ofColor color = (clicked) ? ofColor(255, 255, 0) : ofColor(128);
 		ofNoFill();
 		ofDrawEllipse(pos.x, pos.y, size.x, size.y);
 		font.draw(title, pos.x, pos.y - size.y / 2);
@@ -124,6 +135,28 @@ namespace DeUI {
 	}
 	bool Fader::onEvent(const Event& event)
 	{
+		switch (event.type) {
+		case EventType::mousePressed:
+			if (rect().inside(event.pos)) {
+				clicked = true;
+				return true;
+			}
+			break;
+		case EventType::mouseDragged:
+			if (clicked) {
+
+				return true;
+			}
+			break;
+		case EventType::mouseReleased:
+			if (clicked) {
+				clicked = false;
+				return true;
+			}
+			break;
+		default:
+			return false;
+		}
 		return false;
 	}
 
@@ -145,13 +178,13 @@ namespace DeUI {
 	bool Button::onEvent(const Event& event)
 	{
 		if (event.type == EventType::keyPressed) {
-			if (event.value1 == key) {
+			if (event.key == key) {
 				*value = 1;
 				return true;
 			}
 		}
 		if (event.type == EventType::keyReleased) {
-			if (event.value1 == key) {
+			if (event.key == key) {
 				*value = 0;
 				return true;
 			}
@@ -169,8 +202,8 @@ namespace DeUI {
 	void Screen::draw(Font& font) {
 		ofSetColor(128);
 		ofNoFill();
-		ofDrawRectangle(pos.x-1, pos.y-1, size.x+2, size.y+2);
-		font.draw(title, pos.x + size.x/2, pos.y-1);
+		ofDrawRectangle(pos.x - 1, pos.y - 1, size.x + 2, size.y + 2);
+		font.draw(title, pos.x + size.x / 2, pos.y - 1);
 	}
 	ofRectangle Screen::rect()
 	{
