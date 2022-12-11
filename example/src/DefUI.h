@@ -2,7 +2,7 @@
 
 #ifndef FADER
 #define FADER(NAME, TITLE, MAX, X, Y, D)
-#define BUTTON(NAME, TITLE, X, Y, W, H)
+#define BUTTON(NAME, TITLE, KEY, X, Y, W, H)
 #define LED(NAME, TITLE, X, Y, D)
 #define SCREEN(NAME, TITLE, X, Y, W, H)
 #endif
@@ -31,6 +31,6 @@ FADER(FD2_Rel, "Rel", 10, 250, 400, 30)
 LED(LED1, "Led 1", 150, 450, 15)
 LED(LED2, "Led 2", 250, 450, 15)
 
-BUTTON(PAD1, "Pad 1", 150, 480, 50, 30)
-BUTTON(PAD2, "Pad 2", 250, 480, 50, 30)
+BUTTON(PAD1, "Pad 1", '1', 150, 480, 50, 30)
+BUTTON(PAD2, "Pad 2", '2', 250, 480, 50, 30)
 

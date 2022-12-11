@@ -8,6 +8,20 @@
 
 namespace DeUI {
 	class UI;
+	enum class EventType : int {
+		keyPressed = 0,
+		keyReleased,
+		mouseMoved,
+		mouseDragged,
+		mousePressed,
+		mouseReleased
+	};
+	struct Event {
+		EventType type;
+		int value1 = 0;
+		int value2 = 0;
+		int value3 = 0;
+	};
 	struct Font {
 		ofTrueTypeFont font;
 		ofColor color;
@@ -28,12 +42,14 @@ namespace DeUI {
 	class Control {
 	public:
 		Control(ControlData data);
-		virtual ~Control() {}	
+		virtual ~Control() {}
 		UI* parent;
 		string title;
 		glm::vec2 pos;
 		glm::vec2 size;
 		virtual void draw(Font& font);
+		virtual ofRectangle rect();
+		virtual bool onEvent(const Event& event) { return false; }
 	};
 	class ControlWithValue : public Control {
 	public:
@@ -43,21 +59,25 @@ namespace DeUI {
 	};
 	class Fader : public ControlWithValue {
 	public:
-		Fader(ControlData data, int *Value, int Max) : ControlWithValue(data, Value), maxval(Max) {}
+		Fader(ControlData data, int* Value, int Max) : ControlWithValue(data, Value), maxval(Max) {}
 		virtual ~Fader() {}
 		virtual void draw(Font& font);
 		int maxval = 10;
 		glm::vec2 value_to_vec(int v);
+		virtual bool onEvent(const Event& event);
 	};
 	class Button : public ControlWithValue {
 	public:
-		Button(ControlData data, int *Value) : ControlWithValue(data, Value) {}
+		Button(ControlData data, int* Value, int Key) : ControlWithValue(data, Value), key(Key) {}
 		virtual ~Button() {}
 		virtual void draw(Font& font);
+		virtual ofRectangle rect();
+		int key = 0;
+		virtual bool onEvent(const Event& event);
 	};
 	class Led : public ControlWithValue {
 	public:
-		Led(ControlData data, int *Value) : ControlWithValue(data, Value) {}
+		Led(ControlData data, int* Value) : ControlWithValue(data, Value) {}
 		virtual ~Led() {}
 		virtual void draw(Font& font);
 	};
@@ -66,6 +86,7 @@ namespace DeUI {
 		Screen(ControlData data) : Control(data) {}
 		virtual ~Screen() {}
 		virtual void draw(Font& font);
+		virtual ofRectangle rect();
 	};
 
 	class UI {
@@ -75,6 +96,7 @@ namespace DeUI {
 		void setup();
 		void update();
 		void draw(float W, float H);
+		void onEvent(const Event& event);
 
 		void register_control(Control* c);
 
