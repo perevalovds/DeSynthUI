@@ -75,10 +75,12 @@ namespace DeUI {
 	}
 
 	//--------------------------------------------------------------
-	void Font::draw(const string& text, float x, float y)
+	void Font::draw(const string& text, float x, float y, bool centerY)
 	{
 		ofSetColor(color);
-		font.drawString(text, x, y - shiftY);
+		auto box = font.getStringBoundingBox(text, 0, 0);
+		y = (centerY) ? y - box.y / 2 : y - shiftY;
+		font.drawString(text, x-box.width / 2, y);
 	}
 
 	//--------------------------------------------------------------
@@ -88,25 +90,26 @@ namespace DeUI {
 	void Fader::draw(Font& font) {
 		ofSetColor(128);
 		ofNoFill();
-		ofDrawEllipse(pos.x, pos.y - size.y / 2, size.x, size.y);
+		ofDrawEllipse(pos.x, pos.y, size.x, size.y);
 		font.draw(title, pos.x, pos.y - size.y / 2);
 	}
 	void Button::draw(Font& font) {
 		ofSetColor(128);
 		ofNoFill();
 		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
-
+		font.draw(title, pos.x, pos.y, true);
 	}
 	void Led::draw(Font& font) {
 		ofSetColor(128);
 		ofNoFill();
-		ofDrawEllipse(pos.x, pos.y - size.y / 2, size.x, size.y);
+		ofDrawEllipse(pos.x, pos.y, size.x, size.y);
+		font.draw(title, pos.x, pos.y - size.y / 2);
 	}
 	void Screen::draw(Font& font) {
-		ofSetColor(128);
+		ofSetColor(64);
 		ofFill();
 		ofDrawRectangle(pos.x, pos.y, size.x, size.y);
-
+		font.draw(title, pos.x + size.x/2, pos.y);
 	}
 
 	//--------------------------------------------------------------

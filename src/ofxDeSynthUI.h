@@ -12,7 +12,7 @@ namespace DeUI {
 		ofTrueTypeFont font;
 		ofColor color;
 		float shiftY = 0;
-		void draw(const string& text, float x, float y);
+		void draw(const string& text, float x, float y, bool centerY = false);
 	};
 	struct ControlData {
 		ControlData() {}
