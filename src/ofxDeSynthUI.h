@@ -35,26 +35,30 @@ namespace DeUI {
 		glm::vec2 size;
 		virtual void draw(Font& font);
 	};
-
-	class Fader : public Control {
+	class ControlWithValue : public Control {
 	public:
-		Fader(ControlData data, float *Value) : Control(data), value(Value) {}
+		ControlWithValue(ControlData data, int* Value) : Control(data), value(Value) {}
+		virtual ~ControlWithValue() {}
+		int* value = nullptr;
+	};
+	class Fader : public ControlWithValue {
+	public:
+		Fader(ControlData data, int *Value, int Max) : ControlWithValue(data, Value), maxval(Max) {}
 		virtual ~Fader() {}
-		float* value = nullptr;
 		virtual void draw(Font& font);
+		int maxval = 10;
+		glm::vec2 value_to_vec(int v);
 	};
-	class Button : public Control {
+	class Button : public ControlWithValue {
 	public:
-		Button(ControlData data, int *Value) : Control(data), value(Value) {}
+		Button(ControlData data, int *Value) : ControlWithValue(data, Value) {}
 		virtual ~Button() {}
-		int* value = 0;
 		virtual void draw(Font& font);
 	};
-	class Led : public Control {
+	class Led : public ControlWithValue {
 	public:
-		Led(ControlData data, int *Value) : Control(data), value(Value) {}
+		Led(ControlData data, int *Value) : ControlWithValue(data, Value) {}
 		virtual ~Led() {}
-		int* value = 0;
 		virtual void draw(Font& font);
 	};
 	class Screen : public Control {
@@ -75,7 +79,7 @@ namespace DeUI {
 		void register_control(Control* c);
 
 		// Components definitions
-#define FADER(NAME, TITLE, X, Y, D) Fader* ui##NAME; float NAME = 0;
+#define FADER(NAME, TITLE, MAX, X, Y, D) Fader* ui##NAME; int NAME = 0;
 #define BUTTON(NAME, TITLE, X, Y, W, H) Button* ui##NAME; int NAME = 0;
 #define LED(NAME, TITLE, X, Y, D) Led* ui##NAME; int NAME = 0;
 #define SCREEN(NAME, TITLE, X, Y, W, H) Screen* ui##NAME;

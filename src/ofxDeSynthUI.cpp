@@ -14,7 +14,7 @@ namespace DeUI {
 	UI::UI()
 	{
 		// Components creation
-#define FADER(NAME, TITLE, X, Y, D) ui##NAME = new Fader(ControlData(this, TITLE, X, Y, D, D), &NAME);
+#define FADER(NAME, TITLE, MAX, X, Y, D) ui##NAME = new Fader(ControlData(this, TITLE, X, Y, D, D), &NAME, MAX );
 #define BUTTON(NAME, TITLE, X, Y, W, H) ui##NAME = new Button(ControlData(this, TITLE, X, Y, W, H), &NAME);
 #define LED(NAME, TITLE, X, Y, D) ui##NAME = new Led(ControlData(this, TITLE, X, Y, D, D), &NAME);
 #define SCREEN(NAME, TITLE, X, Y, W, H) ui##NAME = new Screen(ControlData(this, TITLE, X, Y, W, H));
@@ -92,7 +92,28 @@ namespace DeUI {
 		ofNoFill();
 		ofDrawEllipse(pos.x, pos.y, size.x, size.y);
 		font.draw(title, pos.x, pos.y - size.y / 2);
+
+		// Marks
+		float R1 = size.x / 2;
+		float R2 = R1 * 0.8;
+		ofSetColor(128);
+		for (int i = 0; i <= maxval; i++) {
+			auto vec = value_to_vec(i);
+			ofDrawLine(pos + vec * R1, pos + vec * R2);
+		}
+		// Current value
+		ofSetColor(255);
+		auto vec = value_to_vec(*value);
+		ofDrawLine(pos, pos + vec * R2);
 	}
+	glm::vec2 Fader::value_to_vec(int v) {
+		const float wide = 60;
+		const float angle1 = 90 + wide;
+		const float angle2 = 360 + 90 -wide;
+		float angle = ofMap(v, 0, maxval, angle1, angle2) * DEG_TO_RAD;
+		return glm::vec2(cos(angle), sin(angle));
+	}
+
 	void Button::draw(Font& font) {
 		ofSetColor(128);
 		ofNoFill();
@@ -106,10 +127,10 @@ namespace DeUI {
 		font.draw(title, pos.x, pos.y - size.y / 2);
 	}
 	void Screen::draw(Font& font) {
-		ofSetColor(64);
-		ofFill();
-		ofDrawRectangle(pos.x, pos.y, size.x, size.y);
-		font.draw(title, pos.x + size.x/2, pos.y);
+		ofSetColor(128);
+		ofNoFill();
+		ofDrawRectangle(pos.x-1, pos.y-1, size.x+2, size.y+2);
+		font.draw(title, pos.x + size.x/2, pos.y-1);
 	}
 
 	//--------------------------------------------------------------
