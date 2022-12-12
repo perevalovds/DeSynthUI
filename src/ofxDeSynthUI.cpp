@@ -46,6 +46,25 @@ namespace DeUI {
 
 	}
 
+	void UI::keyPressed(int key) {
+		onEvent({ DeUI::EventType::keyPressed, glm::vec2(0,0), 0, key });
+	}
+	void UI::keyReleased(int key) {
+		onEvent({ DeUI::EventType::keyReleased, glm::vec2(0,0), 0, key });
+	}
+	void UI::mouseMoved(int x, int y) {
+		onEvent({ DeUI::EventType::mouseMoved, glm::vec2(x, y), 0, 0 });
+	}
+	void UI::mouseDragged(int x, int y, int button) {
+		onEvent({ DeUI::EventType::mouseDragged, glm::vec2(x, y), button, 0 });
+	}
+	void UI::mousePressed(int x, int y, int button) {
+		onEvent({ DeUI::EventType::mousePressed, glm::vec2(x, y), button, 0 });
+	}
+	void UI::mouseReleased(int x, int y, int button) {
+		onEvent({ DeUI::EventType::mouseReleased, glm::vec2(x, y), button, 0 });
+	}
+
 	void UI::onEvent(const Event& event) {
 		Event ev = event;
 		if (event.isMouseEvent()) {
@@ -243,6 +262,12 @@ namespace DeUI {
 	}
 
 	void Led::draw(Font& font) {
+		if (*value == 1) {
+			ofSetColor(128, 128, 0);
+			ofFill();
+			ofDrawEllipse(pos.x, pos.y, size.x/2, size.y/2);
+		}
+
 		ofSetColor(128);
 		ofNoFill();
 		ofDrawEllipse(pos.x, pos.y, size.x, size.y);

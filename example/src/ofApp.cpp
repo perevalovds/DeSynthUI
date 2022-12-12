@@ -21,6 +21,8 @@ void ofApp::exit() {
 //--------------------------------------------------------------
 void ofApp::update(){
 	UI->update();
+	UI->LED1 = UI->PAD1;
+	UI->LED2 = UI->PAD2;
 }
 
 //--------------------------------------------------------------
@@ -35,32 +37,32 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-	UI->onEvent({ DeUI::EventType::keyPressed, glm::vec2(0,0), 0, key });
+	UI->keyPressed(key);
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-	UI->onEvent({ DeUI::EventType::keyReleased, glm::vec2(0,0), 0, key });
+	UI->keyReleased(key);
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-	UI->onEvent({ DeUI::EventType::mouseMoved, glm::vec2(x, y), 0, 0 });
+	UI->mouseMoved(x, y);
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-	UI->onEvent({ DeUI::EventType::mouseDragged, glm::vec2(x, y), button, 0 });
+	UI->mouseDragged(x, y, button);
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-	UI->onEvent({ DeUI::EventType::mousePressed, glm::vec2(x, y), button, 0 });
+	UI->mousePressed(x, y, button);
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-	UI->onEvent({ DeUI::EventType::mouseReleased, glm::vec2(x, y), button, 0 });
+	UI->mouseReleased(x, y, button);
 }
 
 //--------------------------------------------------------------

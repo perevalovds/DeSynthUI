@@ -112,7 +112,12 @@ namespace DeUI {
 		void save_json(const string& file_name = "values.json");
 		void load_json(const string& file_name = "values.json");
 
-		void onEvent(const Event& event);
+		void keyPressed(int key);
+		void keyReleased(int key);
+		void mouseMoved(int x, int y);
+		void mouseDragged(int x, int y, int button);
+		void mousePressed(int x, int y, int button);
+		void mouseReleased(int x, int y, int button);
 
 		void register_control(Control* c);
 
@@ -130,6 +135,8 @@ namespace DeUI {
 
 		float scale_ = 1;
 		glm::vec2 transp_ = glm::vec2(0, 0);
+
+		void onEvent(const Event& event);
 	};
 
 }
