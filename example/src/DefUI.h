@@ -1,5 +1,6 @@
 // Defines for UI controls
 
+// Empty definitions
 #ifndef FADER
 #define FADER(NAME, TITLE, MAX, X, Y, D)
 #define BUTTON(NAME, TITLE, KEY, X, Y, W, H)
@@ -34,3 +35,10 @@ LED(LED2, "Led 2", 250, 450, 15)
 BUTTON(PAD1, "Pad 1", '1', 150, 480, 50, 30)
 BUTTON(PAD2, "Pad 2", '2', 250, 480, 50, 30)
 
+// Clear definitions
+#undef FADER
+#undef BUTTON
+#undef LED(NAME, TITLE, X, Y, D)
+#undef SCREEN(NAME, TITLE, X, Y, W, H)
+#undef PANEL_SIZE
+#undef FONT_DEF

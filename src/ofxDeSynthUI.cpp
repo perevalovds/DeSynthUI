@@ -49,9 +49,8 @@ namespace DeUI {
 	void UI::onEvent(const Event& event) {
 		Event ev = event;
 		if (event.isMouseEvent()) {
-			ev.pos /= scale_;
 			ev.pos -= transp_;
-			click_ = ev.pos;
+			ev.pos /= scale_;
 		}
 		for (auto c : controls_) {
 			if (c->onEvent(ev)) {
@@ -62,7 +61,7 @@ namespace DeUI {
 
 	//--------------------------------------------------------------
 	void UI::draw(float W, float H) {
-		float scale_ = min(W / W_, H / H_);
+		scale_ = min(W / W_, H / H_);
 		float w1 = W_ * scale_;
 		float h1 = H_ * scale_;
 		transp_ = glm::vec2((W - w1) / 2, (H - h1) / 2);
@@ -77,10 +76,6 @@ namespace DeUI {
 		ofSetColor(128);
 		ofNoFill();
 		ofDrawRectangle(0, 0, W_, H_);
-
-		// test
-		ofSetColor(0, 255, 0);
-		ofDrawCircle(click_, 5);
 
 		ofPopMatrix();
 	}
@@ -108,7 +103,8 @@ namespace DeUI {
 	}
 
 	void Fader::draw(Font& font) {
-		ofColor color = (clicked) ? ofColor(255, 255, 0) : ofColor(128);
+		ofColor color = (click.clicked) ? ofColor(192, 192, 64) : ofColor(128);
+		ofSetColor(color);
 		ofNoFill();
 		ofDrawEllipse(pos.x, pos.y, size.x, size.y);
 		font.draw(title, pos.x, pos.y - size.y / 2);
@@ -138,19 +134,27 @@ namespace DeUI {
 		switch (event.type) {
 		case EventType::mousePressed:
 			if (rect().inside(event.pos)) {
-				clicked = true;
+				click.clicked = true;
+				click.pos = event.pos;
+				click.value = *value;
 				return true;
 			}
 			break;
 		case EventType::mouseDragged:
-			if (clicked) {
-
+			if (click.clicked) {
+				const float faderRange = 100;
+				int v = int(click.value - (event.pos.y - click.pos.y) * maxval / faderRange);
+				*value = min(max(v, 0), maxval);
 				return true;
 			}
 			break;
 		case EventType::mouseReleased:
-			if (clicked) {
-				clicked = false;
+			if (click.clicked) {
+				// Send last value as 'dragged' event
+				Event ev = event;
+				ev.type = EventType::mouseDragged;
+				onEvent(ev);
+				click.clicked = false;
 				return true;
 			}
 			break;
@@ -162,32 +166,47 @@ namespace DeUI {
 
 	void Button::draw(Font& font) {
 		if (*value == 1) {
-			ofSetColor(64);
+			ofSetColor(32, 32, 0);
 			ofFill();
 			ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
 		}
-		ofSetColor(128);
+		ofColor color = (*value == 1) ? ofColor(192, 192, 64) : ofColor(128);
+		ofSetColor(color);
 		ofNoFill();
 		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
 		font.draw(title, pos.x, pos.y, true);
 	}
-	ofRectangle Button::rect()
-	{
-		return ofRectangle(pos.x, pos.y, size.x, size.y);
-	}
 	bool Button::onEvent(const Event& event)
 	{
-		if (event.type == EventType::keyPressed) {
+		switch (event.type) {
+		case EventType::mousePressed:
+			if (rect().inside(event.pos)) {
+				clicked = true;
+				*value = 1;
+				return true;
+			}
+			break;
+		case EventType::mouseReleased:
+			if (clicked) {
+				clicked = false;
+				*value = 0;
+				return true;
+			}
+			break;
+		case EventType::keyPressed:
 			if (event.key == key) {
 				*value = 1;
 				return true;
 			}
-		}
-		if (event.type == EventType::keyReleased) {
+			break;
+		case EventType::keyReleased:
 			if (event.key == key) {
 				*value = 0;
 				return true;
 			}
+			break;
+		default:
+			return false;
 		}
 		return false;
 	}

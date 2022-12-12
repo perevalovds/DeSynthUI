@@ -29,6 +29,11 @@ namespace DeUI {
 		float shiftY = 0;
 		void draw(const string& text, float x, float y, bool centerY = false);
 	};
+	struct FaderClickData {
+		bool clicked = false;
+		glm::vec2 pos = glm::vec2(0, 0);
+		int value = 0;
+	};
 	struct ControlData {
 		ControlData() {}
 		ControlData(UI* Parent, string Title, float X, float Y, float W, float H)
@@ -66,16 +71,16 @@ namespace DeUI {
 		int maxval = 10;
 		glm::vec2 value_to_vec(int v);
 		virtual bool onEvent(const Event& event);
-		bool clicked = false;
+		FaderClickData click;
 	};
 	class Button : public ControlWithValue {
 	public:
 		Button(ControlData data, int* Value, int Key) : ControlWithValue(data, Value), key(Key) {}
 		virtual ~Button() {}
 		virtual void draw(Font& font);
-		virtual ofRectangle rect();
 		int key = 0;
 		virtual bool onEvent(const Event& event);
+		bool clicked = false;
 	};
 	class Led : public ControlWithValue {
 	public:
@@ -116,9 +121,6 @@ namespace DeUI {
 
 		float scale_ = 1;
 		glm::vec2 transp_ = glm::vec2(0, 0);
-
-		// test
-		glm::vec2 click_ = glm::vec2(0, 0);
 	};
 
 }
