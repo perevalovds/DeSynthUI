@@ -36,11 +36,12 @@ namespace DeUI {
 	};
 	struct ControlData {
 		ControlData() {}
-		ControlData(UI* Parent, string Title, float X, float Y, float W, float H)
-			: parent(Parent), title(Title), pos(X, Y), size(W, H)
+		ControlData(UI* Parent, string Name, string Title, float X, float Y, float W, float H)
+			: parent(Parent), name(Name), title(Title), pos(X, Y), size(W, H)
 		{
 		}
-		UI* parent;
+		UI* parent = nullptr;
+		string name;
 		string title;
 		glm::vec2 pos;
 		glm::vec2 size;
@@ -50,18 +51,23 @@ namespace DeUI {
 		Control(ControlData data);
 		virtual ~Control() {}
 		UI* parent;
+		string name;
 		string title;
 		glm::vec2 pos;
 		glm::vec2 size;
 		virtual void draw(Font& font);
 		virtual ofRectangle rect();
 		virtual bool onEvent(const Event& event) { return false; }
+		virtual void save_json(ofJson& json) {}
+		virtual void load_json(ofJson& json) {}
 	};
 	class ControlWithValue : public Control {
 	public:
 		ControlWithValue(ControlData data, int* Value) : Control(data), value(Value) {}
 		virtual ~ControlWithValue() {}
 		int* value = nullptr;
+		virtual void save_json(ofJson& json);
+		virtual void load_json(ofJson& json);
 	};
 	class Fader : public ControlWithValue {
 	public:
@@ -95,7 +101,7 @@ namespace DeUI {
 		virtual void draw(Font& font);
 		virtual ofRectangle rect();
 	};
-
+	//----------------------------------------------------------
 	class UI {
 	public:
 		UI();
@@ -103,6 +109,9 @@ namespace DeUI {
 		void setup();
 		void update();
 		void draw(float W, float H);
+		void save_json(const string& file_name = "values.json");
+		void load_json(const string& file_name = "values.json");
+
 		void onEvent(const Event& event);
 
 		void register_control(Control* c);

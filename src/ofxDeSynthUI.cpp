@@ -6,10 +6,10 @@ namespace DeUI {
 	UI::UI()
 	{
 		// Components creation
-#define FADER(NAME, TITLE, MAX, X, Y, D) ui##NAME = new Fader(ControlData(this, TITLE, X, Y, D, D), &NAME, MAX);
-#define BUTTON(NAME, TITLE, KEY, X, Y, W, H) ui##NAME = new Button(ControlData(this, TITLE, X, Y, W, H), &NAME, KEY);
-#define LED(NAME, TITLE, X, Y, D) ui##NAME = new Led(ControlData(this, TITLE, X, Y, D, D), &NAME);
-#define SCREEN(NAME, TITLE, X, Y, W, H) ui##NAME = new Screen(ControlData(this, TITLE, X, Y, W, H));
+#define FADER(NAME, TITLE, MAX, X, Y, D) ui##NAME = new Fader(ControlData(this, #NAME, TITLE, X, Y, D, D), &NAME, MAX);
+#define BUTTON(NAME, TITLE, KEY, X, Y, W, H) ui##NAME = new Button(ControlData(this, #NAME, TITLE, X, Y, W, H), &NAME, KEY);
+#define LED(NAME, TITLE, X, Y, D) ui##NAME = new Led(ControlData(this, #NAME, TITLE, X, Y, D, D), &NAME);
+#define SCREEN(NAME, TITLE, X, Y, W, H) ui##NAME = new Screen(ControlData(this, #NAME, TITLE, X, Y, W, H));
 
 #include "DefUI.h"
 	}
@@ -79,9 +79,31 @@ namespace DeUI {
 
 		ofPopMatrix();
 	}
+
+	void UI::save_json(const string& file_name) {
+		ofJson json = ofJson::object();
+		for (auto c : controls_) {
+			c->save_json(json);
+		}
+		ofSavePrettyJson(file_name, json);
+	}
+
+	void UI::load_json(const string& file_name) {
+		ofFile file(file_name);
+		if (file.exists()) {
+			ofJson json;
+			file >> json;
+			if (json.is_object()) {
+				for (auto c : controls_) {
+					c->load_json(json);
+				}
+			}
+		}
+	}
+
 	//--------------------------------------------------------------
 	Control::Control(ControlData data)
-		: parent(data.parent), title(data.title), pos(data.pos), size(data.size)
+		: parent(data.parent), name(data.name), title(data.title), pos(data.pos), size(data.size)
 	{
 		parent->register_control(this);
 	}
@@ -100,6 +122,15 @@ namespace DeUI {
 
 	void Control::draw(Font& font) {
 
+	}
+
+	void ControlWithValue::save_json(ofJson& json) { 
+		json[name] = *value;
+	}
+	void ControlWithValue::load_json(ofJson& json) { 
+		if (!json[name].empty()) {
+			*value = json[name];
+		}
 	}
 
 	void Fader::draw(Font& font) {
