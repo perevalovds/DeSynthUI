@@ -127,7 +127,7 @@ namespace DeUI {
 
 		// Components definitions
 #define FADER(NAME, TITLE, MAX, X, Y, D) Fader* ui##NAME; int NAME = 0;
-#define BUTTON(NAME, TITLE, X, Y, W, H) Button* ui##NAME; int NAME = 0;
+#define BUTTON(NAME, KEY, TITLE, X, Y, W, H) Button* ui##NAME; int NAME = 0;
 #define LED(NAME, TITLE, X, Y, D) Led* ui##NAME; int NAME = 0;
 #define SCREEN(NAME, TITLE, X, Y, W, H) Screen* ui##NAME;
 #define PANEL_SIZE(Width, Height) float W_ = Width; float H_ = Height;

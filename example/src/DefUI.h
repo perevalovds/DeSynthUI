@@ -38,7 +38,7 @@ BUTTON(PAD2, "Pad 2", '2', 250, 480, 50, 30)
 // Clear definitions
 #undef FADER
 #undef BUTTON
-#undef LED(NAME, TITLE, X, Y, D)
-#undef SCREEN(NAME, TITLE, X, Y, W, H)
+#undef LED
+#undef SCREEN
 #undef PANEL_SIZE
 #undef FONT_DEF
