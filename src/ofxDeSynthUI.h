@@ -1,8 +1,12 @@
 #pragma once
 
 // UI for synth
-// It's required to prepare DefUI.h file with UI definition - see example.
-// In case of compiling errors, add ./src to the project's Additional Include Directories.
+/*
+## Usage
+- Prepare DefUI.h file with UI definition - see example.
+- Add data / fonts / verdana.ttf font file.
+- In case of compiling errors, add `. / src` to project Additional Include Directories.
+*/
 
 #include "ofMain.h"
 
