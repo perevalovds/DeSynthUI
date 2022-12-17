@@ -6,9 +6,9 @@ namespace DeUI {
 	UI::UI()
 	{
 		// Components creation
-#define FADER(NAME, TITLE, MAX, X, Y, D) ui##NAME = new Fader(ControlData(this, #NAME, TITLE, X, Y, D, D), &NAME, MAX);
-#define BUTTON(NAME, TITLE, KEY, X, Y, W, H) ui##NAME = new Button(ControlData(this, #NAME, TITLE, X, Y, W, H), &NAME, KEY);
-#define LED(NAME, TITLE, X, Y, D) ui##NAME = new Led(ControlData(this, #NAME, TITLE, X, Y, D, D), &NAME);
+#define FADER(NAME, V, TITLE, MAX, X, Y, D) ui##NAME = new Fader(ControlData(this, #NAME, TITLE, X, Y, D, D), &V, MAX);
+#define BUTTON(NAME, V, TITLE, KEY, X, Y, W, H) ui##NAME = new Button(ControlData(this, #NAME, TITLE, X, Y, W, H), &V, KEY);
+#define LED(NAME, V, TITLE, X, Y, D) ui##NAME = new Led(ControlData(this, #NAME, TITLE, X, Y, D, D), &V);
 #define SCREEN(NAME, TITLE, X, Y, W, H) ui##NAME = new Screen(ControlData(this, #NAME, TITLE, X, Y, W, H));
 
 #include "DefUI.h"

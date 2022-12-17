@@ -125,10 +125,16 @@ namespace DeUI {
 
 		void register_control(Control* c);
 
+		int* find_value(const string& name);
+
+		// Variables definitions
+#define VAR(V) int V = 0;
+#define VARARR(V, COUNT) int V[COUNT] = {0};
+
 		// Components definitions
-#define FADER(NAME, TITLE, MAX, X, Y, D) Fader* ui##NAME; int NAME = 0;
-#define BUTTON(NAME, KEY, TITLE, X, Y, W, H) Button* ui##NAME; int NAME = 0;
-#define LED(NAME, TITLE, X, Y, D) Led* ui##NAME; int NAME = 0;
+#define FADER(NAME, V, TITLE, MAX, X, Y, D) Fader* ui##NAME;
+#define BUTTON(NAME, V, KEY, TITLE, X, Y, W, H) Button* ui##NAME;
+#define LED(NAME, V, TITLE, X, Y, D) Led* ui##NAME;
 #define SCREEN(NAME, TITLE, X, Y, W, H) Screen* ui##NAME;
 #define PANEL_SIZE(Width, Height) float W_ = Width; float H_ = Height;
 #include "DefUI.h"
