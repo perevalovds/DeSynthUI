@@ -127,6 +127,8 @@ namespace DeUI {
 
 		int* find_value(const string& name);
 
+		float value_to_float(int* v, int Max);
+
 		// Variables definitions
 #define VAR(V) int V = 0;
 #define VARARR(V, COUNT) int V[COUNT] = {0};

@@ -30,6 +30,12 @@ namespace DeUI {
 	}
 
 	//--------------------------------------------------------------
+	float UI::value_to_float(int* v, int Max)
+	{
+		return float(*v) / Max;
+	}
+
+	//--------------------------------------------------------------
 	void UI::setup() {
 #define FONT_DEF(FontFile, FontSize, FontColor, ShiftY) \
 	string font_file = FontFile; \
