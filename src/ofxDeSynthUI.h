@@ -125,9 +125,7 @@ namespace DeUI {
 
 		void register_control(Control* c);
 
-		int* find_value(const string& name);
-
-		float value_to_float(int* v, int Max);
+		float value_to_float(int v, int Max);
 
 		// Variables definitions
 #define VAR(V) int V = 0;

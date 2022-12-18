@@ -30,9 +30,9 @@ namespace DeUI {
 	}
 
 	//--------------------------------------------------------------
-	float UI::value_to_float(int* v, int Max)
+	float UI::value_to_float(int v, int Max)
 	{
-		return float(*v) / Max;
+		return float(v) / Max;
 	}
 
 	//--------------------------------------------------------------
