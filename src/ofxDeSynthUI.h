@@ -5,7 +5,7 @@
 ## Usage
 - Prepare DefUI.h file with UI definition - see example.
 - Add data / fonts / verdana.ttf font file.
-- In case of compiling errors, add `. / src` to project Additional Include Directories.
+- In case of compiling errors, add `./src` to project Additional Include Directories.
 */
 
 #include "ofMain.h"
@@ -15,7 +15,7 @@ namespace DeUI {
 	struct ValueInt {
 		int value = 0;
 		int value_prev = 0;
-		bool changed() const { value != value_prev; }
+		bool changed() const { return value != value_prev; }
 	};
 	enum class EventType : int {
 		keyPressed = 0,
@@ -70,6 +70,7 @@ namespace DeUI {
 		virtual void save_json(ofJson& json) {}
 		virtual void load_json(ofJson& json) {}
 		virtual void update() {}
+		virtual void store_last_value() {};
 	};
 	class ControlWithValue : public Control {
 	public:
@@ -83,6 +84,7 @@ namespace DeUI {
 		virtual void save_json(ofJson& json);
 		virtual void load_json(ofJson& json);
 		virtual void update();
+		virtual void store_last_value();
 	};
 	class Fader : public ControlWithValue {
 	public:
@@ -126,6 +128,7 @@ namespace DeUI {
 		~UI();
 		void setup();
 		void update();
+		void store_last_values();
 		void draw(float W, float H);
 		void save_json(const string& file_name = "values.json");
 		void load_json(const string& file_name = "values.json");

@@ -53,6 +53,12 @@ namespace DeUI {
 			c->update();
 		}
 	}
+	void UI::store_last_values() {
+		for (auto c : controls_) {
+			c->store_last_value();
+		}
+	}
+
 
 	void UI::keyPressed(int key) {
 		onEvent({ DeUI::EventType::keyPressed, glm::vec2(0,0), 0, key });
@@ -164,6 +170,8 @@ namespace DeUI {
 		}
 	}
 	void ControlWithValue::update() {
+	}
+	void ControlWithValue::store_last_value() {
 		value->value_prev = value->value;
 	}
 
