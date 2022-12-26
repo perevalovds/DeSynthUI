@@ -12,6 +12,11 @@
 
 namespace DeUI {
 	class UI;
+	struct ValueInt {
+		int value = 0;
+		int value_prev = 0;
+		bool changed() const { value != value_prev; }
+	};
 	enum class EventType : int {
 		keyPressed = 0,
 		keyReleased,
@@ -68,14 +73,12 @@ namespace DeUI {
 	};
 	class ControlWithValue : public Control {
 	public:
-		ControlWithValue(ControlData data, int* Value, int* ValueChanged,
+		ControlWithValue(ControlData data, ValueInt* Value,
 			bool SaveJson) 
-			: Control(data), value(Value), value_changed(ValueChanged),
+			: Control(data), value(Value),
 			save_json_enabled(SaveJson) {}
 		virtual ~ControlWithValue() {}
-		int* value = nullptr;
-		int value_prev = 0;
-		int* value_changed = nullptr;
+		ValueInt* value = nullptr;
 		bool save_json_enabled = true;
 		virtual void save_json(ofJson& json);
 		virtual void load_json(ofJson& json);
@@ -83,8 +86,8 @@ namespace DeUI {
 	};
 	class Fader : public ControlWithValue {
 	public:
-		Fader(ControlData data, int* Value, int *ValueChanged, int Max) 
-			: ControlWithValue(data, Value, ValueChanged, true), maxval(Max) {}
+		Fader(ControlData data, ValueInt* Value, int Max) 
+			: ControlWithValue(data, Value, true), maxval(Max) {}
 		virtual ~Fader() {}
 		virtual void draw(Font& font);
 		int maxval = 10;
@@ -94,8 +97,8 @@ namespace DeUI {
 	};
 	class Button : public ControlWithValue {
 	public:
-		Button(ControlData data, int* Value, int* ValueChanged, int Key) 
-			: ControlWithValue(data, Value, ValueChanged, false), key(Key) {}
+		Button(ControlData data, ValueInt* Value, int Key)
+			: ControlWithValue(data, Value, false), key(Key) {}
 		virtual ~Button() {}
 		virtual void draw(Font& font);
 		int key = 0;
@@ -104,8 +107,8 @@ namespace DeUI {
 	};
 	class Led : public ControlWithValue {
 	public:
-		Led(ControlData data, int* Value) 
-			: ControlWithValue(data, Value, nullptr, false) {}
+		Led(ControlData data, ValueInt* Value) 
+			: ControlWithValue(data, Value, false) {}
 		virtual ~Led() {}
 		virtual void draw(Font& font);
 	};
@@ -139,10 +142,8 @@ namespace DeUI {
 		float value_to_float(int v, int Max);
 
 		// Variables definitions
-#define VAR_WRITEONLY(V) int V = 0;
-#define VAR(V) int V = 0; int Changed##V = 0;
-#define VARARR_WRITEONLY(V, COUNT) int V[COUNT] = {0};
-#define VARARR(V,COUNT) int V[COUNT] = {0}; int Changed##V[COUNT] = {0};
+#define VAR(V) ValueInt V;
+#define VARARR(V, COUNT) ValueInt V[COUNT];
 
 		// Components definitions
 #define FADER(NAME, V, TITLE, MAX, X, Y, D) Fader* ui##NAME;

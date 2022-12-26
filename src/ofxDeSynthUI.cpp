@@ -6,8 +6,8 @@ namespace DeUI {
 	UI::UI()
 	{
 		// Components creation
-#define FADER(NAME, V, TITLE, MAX, X, Y, D) ui##NAME = new Fader(ControlData(this, #NAME, TITLE, X, Y, D, D), &V, &Changed##V, MAX);
-#define BUTTON(NAME, V, TITLE, KEY, X, Y, W, H) ui##NAME = new Button(ControlData(this, #NAME, TITLE, X, Y, W, H), &V, &Changed##V, KEY);
+#define FADER(NAME, V, TITLE, MAX, X, Y, D) ui##NAME = new Fader(ControlData(this, #NAME, TITLE, X, Y, D, D), &V, MAX);
+#define BUTTON(NAME, V, TITLE, KEY, X, Y, W, H) ui##NAME = new Button(ControlData(this, #NAME, TITLE, X, Y, W, H), &V, KEY);
 #define LED(NAME, V, TITLE, X, Y, D) ui##NAME = new Led(ControlData(this, #NAME, TITLE, X, Y, D, D), &V);
 #define SCREEN(NAME, TITLE, X, Y, W, H) ui##NAME = new Screen(ControlData(this, #NAME, TITLE, X, Y, W, H));
 
@@ -49,7 +49,9 @@ namespace DeUI {
 
 	//--------------------------------------------------------------
 	void UI::update() {
-
+		for (auto c : controls_) {
+			c->update();
+		}
 	}
 
 	void UI::keyPressed(int key) {
@@ -151,21 +153,18 @@ namespace DeUI {
 
 	void ControlWithValue::save_json(ofJson& json) { 
 		if (save_json_enabled) {
-			json[name] = *value;
+			json[name] = value->value;
 		}
 	}
 	void ControlWithValue::load_json(ofJson& json) { 
 		if (save_json_enabled) {
 			if (!json[name].empty()) {
-				*value = json[name];
+				value->value = json[name];
 			}
 		}
 	}
 	void ControlWithValue::update() {
-		if (value_changed != nullptr) {
-			*value_changed = (*value == value_prev);
-			value_prev = *value;
-		}
+		value->value_prev = value->value;
 	}
 
 	void Fader::draw(Font& font) {
@@ -185,7 +184,7 @@ namespace DeUI {
 		}
 		// Current value
 		ofSetColor(255);
-		auto vec = value_to_vec(*value);
+		auto vec = value_to_vec(value->value);
 		ofDrawLine(pos, pos + vec * R2);
 	}
 	glm::vec2 Fader::value_to_vec(int v) {
@@ -202,7 +201,7 @@ namespace DeUI {
 			if (rect().inside(event.pos)) {
 				click.clicked = true;
 				click.pos = event.pos;
-				click.value = *value;
+				click.value = value->value;
 				return true;
 			}
 			break;
@@ -210,7 +209,7 @@ namespace DeUI {
 			if (click.clicked) {
 				const float faderRange = 100;
 				int v = int(click.value - (event.pos.y - click.pos.y) * maxval / faderRange);
-				*value = min(max(v, 0), maxval);
+				value->value = min(max(v, 0), maxval);
 				return true;
 			}
 			break;
@@ -231,12 +230,12 @@ namespace DeUI {
 	}
 
 	void Button::draw(Font& font) {
-		if (*value == 1) {
+		if (value->value == 1) {
 			ofSetColor(32, 32, 0);
 			ofFill();
 			ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
 		}
-		ofColor color = (*value == 1) ? ofColor(192, 192, 64) : ofColor(128);
+		ofColor color = (value->value == 1) ? ofColor(192, 192, 64) : ofColor(128);
 		ofSetColor(color);
 		ofNoFill();
 		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
@@ -248,26 +247,26 @@ namespace DeUI {
 		case EventType::mousePressed:
 			if (rect().inside(event.pos)) {
 				clicked = true;
-				*value = 1;
+				value->value = 1;
 				return true;
 			}
 			break;
 		case EventType::mouseReleased:
 			if (clicked) {
 				clicked = false;
-				*value = 0;
+				value->value = 0;
 				return true;
 			}
 			break;
 		case EventType::keyPressed:
 			if (event.key == key) {
-				*value = 1;
+				value->value = 1;
 				return true;
 			}
 			break;
 		case EventType::keyReleased:
 			if (event.key == key) {
-				*value = 0;
+				value->value = 0;
 				return true;
 			}
 			break;
@@ -278,7 +277,7 @@ namespace DeUI {
 	}
 
 	void Led::draw(Font& font) {
-		if (*value == 1) {
+		if (value->value == 1) {
 			ofSetColor(128, 128, 0);
 			ofFill();
 			ofDrawEllipse(pos.x, pos.y, size.x/2, size.y/2);
