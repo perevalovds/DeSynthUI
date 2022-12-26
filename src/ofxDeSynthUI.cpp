@@ -6,8 +6,8 @@ namespace DeUI {
 	UI::UI()
 	{
 		// Components creation
-#define FADER(NAME, V, TITLE, MAX, X, Y, D) ui##NAME = new Fader(ControlData(this, #NAME, TITLE, X, Y, D, D), &V, MAX);
-#define BUTTON(NAME, V, TITLE, KEY, X, Y, W, H) ui##NAME = new Button(ControlData(this, #NAME, TITLE, X, Y, W, H), &V, KEY);
+#define FADER(NAME, V, TITLE, MAX, X, Y, D) ui##NAME = new Fader(ControlData(this, #NAME, TITLE, X, Y, D, D), &V, &Changed##V, MAX);
+#define BUTTON(NAME, V, TITLE, KEY, X, Y, W, H) ui##NAME = new Button(ControlData(this, #NAME, TITLE, X, Y, W, H), &V, &Changed##V, KEY);
 #define LED(NAME, V, TITLE, X, Y, D) ui##NAME = new Led(ControlData(this, #NAME, TITLE, X, Y, D, D), &V);
 #define SCREEN(NAME, TITLE, X, Y, W, H) ui##NAME = new Screen(ControlData(this, #NAME, TITLE, X, Y, W, H));
 
@@ -128,9 +128,9 @@ namespace DeUI {
 
 	//--------------------------------------------------------------
 	Control::Control(ControlData data)
-		: parent(data.parent), name(data.name), title(data.title), pos(data.pos), size(data.size)
+		: ui(data.ui), name(data.name), title(data.title), pos(data.pos), size(data.size)
 	{
-		parent->register_control(this);
+		ui->register_control(this);
 	}
 	ofRectangle Control::rect()
 	{
@@ -150,11 +150,21 @@ namespace DeUI {
 	}
 
 	void ControlWithValue::save_json(ofJson& json) { 
-		json[name] = *value;
+		if (save_json_enabled) {
+			json[name] = *value;
+		}
 	}
 	void ControlWithValue::load_json(ofJson& json) { 
-		if (!json[name].empty()) {
-			*value = json[name];
+		if (save_json_enabled) {
+			if (!json[name].empty()) {
+				*value = json[name];
+			}
+		}
+	}
+	void ControlWithValue::update() {
+		if (value_changed != nullptr) {
+			*value_changed = (*value == value_prev);
+			value_prev = *value;
 		}
 	}
 

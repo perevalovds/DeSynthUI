@@ -40,11 +40,11 @@ namespace DeUI {
 	};
 	struct ControlData {
 		ControlData() {}
-		ControlData(UI* Parent, string Name, string Title, float X, float Y, float W, float H)
-			: parent(Parent), name(Name), title(Title), pos(X, Y), size(W, H)
+		ControlData(UI* Ui, string Name, string Title, float X, float Y, float W, float H)
+			: ui(Ui), name(Name), title(Title), pos(X, Y), size(W, H)
 		{
 		}
-		UI* parent = nullptr;
+		UI* ui = nullptr;
 		string name;
 		string title;
 		glm::vec2 pos;
@@ -54,7 +54,7 @@ namespace DeUI {
 	public:
 		Control(ControlData data);
 		virtual ~Control() {}
-		UI* parent;
+		UI* ui;
 		string name;
 		string title;
 		glm::vec2 pos;
@@ -64,18 +64,27 @@ namespace DeUI {
 		virtual bool onEvent(const Event& event) { return false; }
 		virtual void save_json(ofJson& json) {}
 		virtual void load_json(ofJson& json) {}
+		virtual void update() {}
 	};
 	class ControlWithValue : public Control {
 	public:
-		ControlWithValue(ControlData data, int* Value) : Control(data), value(Value) {}
+		ControlWithValue(ControlData data, int* Value, int* ValueChanged,
+			bool SaveJson) 
+			: Control(data), value(Value), value_changed(ValueChanged),
+			save_json_enabled(SaveJson) {}
 		virtual ~ControlWithValue() {}
 		int* value = nullptr;
+		int value_prev = 0;
+		int* value_changed = nullptr;
+		bool save_json_enabled = true;
 		virtual void save_json(ofJson& json);
 		virtual void load_json(ofJson& json);
+		virtual void update();
 	};
 	class Fader : public ControlWithValue {
 	public:
-		Fader(ControlData data, int* Value, int Max) : ControlWithValue(data, Value), maxval(Max) {}
+		Fader(ControlData data, int* Value, int *ValueChanged, int Max) 
+			: ControlWithValue(data, Value, ValueChanged, true), maxval(Max) {}
 		virtual ~Fader() {}
 		virtual void draw(Font& font);
 		int maxval = 10;
@@ -85,7 +94,8 @@ namespace DeUI {
 	};
 	class Button : public ControlWithValue {
 	public:
-		Button(ControlData data, int* Value, int Key) : ControlWithValue(data, Value), key(Key) {}
+		Button(ControlData data, int* Value, int* ValueChanged, int Key) 
+			: ControlWithValue(data, Value, ValueChanged, false), key(Key) {}
 		virtual ~Button() {}
 		virtual void draw(Font& font);
 		int key = 0;
@@ -94,7 +104,8 @@ namespace DeUI {
 	};
 	class Led : public ControlWithValue {
 	public:
-		Led(ControlData data, int* Value) : ControlWithValue(data, Value) {}
+		Led(ControlData data, int* Value) 
+			: ControlWithValue(data, Value, nullptr, false) {}
 		virtual ~Led() {}
 		virtual void draw(Font& font);
 	};
@@ -128,8 +139,10 @@ namespace DeUI {
 		float value_to_float(int v, int Max);
 
 		// Variables definitions
-#define VAR(V) int V = 0;
-#define VARARR(V, COUNT) int V[COUNT] = {0};
+#define VAR_WRITEONLY(V) int V = 0;
+#define VAR(V) int V = 0; int Changed##V = 0;
+#define VARARR_WRITEONLY(V, COUNT) int V[COUNT] = {0};
+#define VARARR(V,COUNT) int V[COUNT] = {0}; int Changed##V[COUNT] = {0};
 
 		// Components definitions
 #define FADER(NAME, V, TITLE, MAX, X, Y, D) Fader* ui##NAME;
