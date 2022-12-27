@@ -298,6 +298,10 @@ namespace DeUI {
 	}
 
 	void Screen::draw(Font& font) {
+		if (image_.isAllocated()) {
+			ofSetColor(255);
+			image_.draw(pos.x, pos.y, size.x, size.y);
+		}
 		ofSetColor(128);
 		ofNoFill();
 		ofDrawRectangle(pos.x - 1, pos.y - 1, size.x + 2, size.y + 2);
@@ -306,6 +310,11 @@ namespace DeUI {
 	ofRectangle Screen::rect()
 	{
 		return ofRectangle(pos.x, pos.y, size.x, size.y);
+	}
+
+	void Screen::set_image_grayscale(unsigned char* image, int w, int h)
+	{
+		image_.setFromPixels(image, w, h, OF_IMAGE_GRAYSCALE);
 	}
 	//--------------------------------------------------------------
 }

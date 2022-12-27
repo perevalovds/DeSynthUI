@@ -120,6 +120,9 @@ namespace DeUI {
 		virtual ~Screen() {}
 		virtual void draw(Font& font);
 		virtual ofRectangle rect();
+		void set_image_grayscale(unsigned char* image, int w, int h);
+	protected:
+		ofImage image_;
 	};
 	//----------------------------------------------------------
 	class UI {
