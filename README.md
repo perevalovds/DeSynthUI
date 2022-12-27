@@ -16,3 +16,5 @@ Addon was tested in Windows 10, openFrameworks 0.10.1.
 - Prepare DefUI.h file with UI definition - see example.
 - Add data/fonts/verdana.ttf font file.
 - In case of compiling errors, add `./src` to project Additional Include Directories.
+
+Note: currently example is out-of-date, see usage here: https://github.com/PseudoInstruments/PseudoDrums
