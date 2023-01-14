@@ -7,6 +7,7 @@ namespace DeUI {
 	{
 		// Components creation
 #define FADER(NAME, V, TITLE, MAX, X, Y, D) ui##NAME = new Fader(ControlData(this, #NAME, TITLE, X, Y, D, D), &V, MAX);
+#define JOYSTICK(NAME, VX, VY, TITLE, MAX, X, Y, D) ui##NAME = new Joystick(ControlData(this, #NAME, TITLE, X, Y, D, D), &VX, &VY, MAX);
 #define BUTTON(NAME, V, TITLE, KEY, X, Y, W, H) ui##NAME = new Button(ControlData(this, #NAME, TITLE, X, Y, W, H), &V, KEY);
 #define LED(NAME, V, TITLE, X, Y, D) ui##NAME = new Led(ControlData(this, #NAME, TITLE, X, Y, D, D), &V);
 #define SCREEN(NAME, TITLE, X, Y, W, H) ui##NAME = new Screen(ControlData(this, #NAME, TITLE, X, Y, W, H));
@@ -157,12 +158,12 @@ namespace DeUI {
 
 	}
 
-	void ControlWithValue::save_json(ofJson& json) { 
+	void ControlWithValue::save_json(ofJson& json) {
 		if (save_json_enabled) {
 			json[name] = value->value;
 		}
 	}
-	void ControlWithValue::load_json(ofJson& json) { 
+	void ControlWithValue::load_json(ofJson& json) {
 		if (save_json_enabled) {
 			if (!json[name].empty()) {
 				value->value = json[name];
@@ -172,7 +173,7 @@ namespace DeUI {
 	void ControlWithValue::update() {
 	}
 	void ControlWithValue::store_last_value() {
-		value->value_prev = value->value;
+		value->store_last_value();
 	}
 
 	void Fader::draw(Font& font) {
@@ -218,6 +219,75 @@ namespace DeUI {
 				const float faderRange = 100;
 				int v = int(click.value - (event.pos.y - click.pos.y) * maxval / faderRange);
 				value->value = min(max(v, 0), maxval);
+				return true;
+			}
+			break;
+		case EventType::mouseReleased:
+			if (click.clicked) {
+				// Send last value as 'dragged' event
+				Event ev = event;
+				ev.type = EventType::mouseDragged;
+				onEvent(ev);
+				click.clicked = false;
+				return true;
+			}
+			break;
+		default:
+			return false;
+		}
+		return false;
+	}
+	void Joystick::save_json(ofJson& json) {
+		json[name + "X"] = valueX->value;
+		json[name + "Y"] = valueX->value;
+	}
+	void Joystick::load_json(ofJson& json) {
+		if (!json[name + "X"].empty()) {
+			valueX->value = json[name + "X"];
+		}
+		if (!json[name + "Y"].empty()) {
+			valueY->value = json[name + "Y"];
+		}
+	}
+	void Joystick::store_last_value() {
+		valueX->store_last_value();
+		valueY->store_last_value();
+	}
+	void Joystick::draw(Font& font) {
+		ofColor color = (click.clicked) ? ofColor(192, 192, 64) : ofColor(128);
+		ofSetColor(color);
+		ofNoFill();
+		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
+		font.draw(title, pos.x, pos.y - size.y / 2);
+
+		// Current value
+		ofSetColor(255);
+		auto vec = value_to_vec();
+		ofDrawLine(pos, pos + vec * size.x);
+	}
+	glm::vec2 Joystick::value_to_vec()
+	{
+		return glm::vec2(float(valueX->value) / maxval, float(valueY->value) / maxval);
+	}
+
+	bool Joystick::onEvent(const Event& event) {
+		switch (event.type) {
+		case EventType::mousePressed:
+			if (rect().inside(event.pos)) {
+				click.clicked = true;
+				click.pos = event.pos;
+				click.valueX = valueX->value;
+				click.valueY = valueY->value;
+				return true;
+			}
+			break;
+		case EventType::mouseDragged:
+			if (click.clicked) {
+				const float faderRange = 100;
+				int vx = int(click.value - (event.pos.x - click.pos.x) * maxval / faderRange);
+				int vy = int(click.value - (event.pos.y - click.pos.y) * maxval / faderRange);
+				valueX->value = min(max(vx, -maxval), maxval);
+				valueY->value = min(max(vy, -maxval), maxval);
 				return true;
 			}
 			break;
@@ -288,7 +358,7 @@ namespace DeUI {
 		if (value->value == 1) {
 			ofSetColor(128, 128, 0);
 			ofFill();
-			ofDrawEllipse(pos.x, pos.y, size.x/2, size.y/2);
+			ofDrawEllipse(pos.x, pos.y, size.x / 2, size.y / 2);
 		}
 
 		ofSetColor(128);

@@ -15,6 +15,7 @@ namespace DeUI {
 	struct ValueInt {
 		int value = 0;
 		int value_prev = 0;
+		void store_last_value() { value_prev = value; }
 		bool changed() const { return value != value_prev; }
 	};
 	enum class EventType : int {
@@ -38,10 +39,12 @@ namespace DeUI {
 		float shiftY = 0;
 		void draw(const string& text, float x, float y, bool centerY = false);
 	};
-	struct FaderClickData {
+	struct ClickData {
 		bool clicked = false;
 		glm::vec2 pos = glm::vec2(0, 0);
-		int value = 0;
+		int value = 0;	// For Fader
+		int valueX = 0; // For Joystick
+		int valueY = 0;
 	};
 	struct ControlData {
 		ControlData() {}
@@ -95,7 +98,25 @@ namespace DeUI {
 		int maxval = 10;
 		glm::vec2 value_to_vec(int v);
 		virtual bool onEvent(const Event& event);
-		FaderClickData click;
+		ClickData click;
+	};
+	class Joystick : public Control {
+	public:
+		Joystick(ControlData data, ValueInt* ValueX, ValueInt* ValueY, int Max)
+			: Control(data), valueX(ValueX), valueY(ValueY), maxval(Max) {}
+		virtual ~Joystick() {}
+
+		virtual void save_json(ofJson& json);
+		virtual void load_json(ofJson& json);
+		virtual void store_last_value();
+		virtual void draw(Font& font);
+		virtual bool onEvent(const Event& event);
+
+		ValueInt* valueX = nullptr;
+		ValueInt* valueY = nullptr;
+		int maxval = 10;
+		glm::vec2 value_to_vec();
+		ClickData click;
 	};
 	class Button : public ControlWithValue {
 	public:
@@ -153,6 +174,7 @@ namespace DeUI {
 
 		// Components definitions
 #define FADER(NAME, V, TITLE, MAX, X, Y, D) Fader* ui##NAME;
+#define JOYSTICK(NAME, VX, VY, TITLE, MAX, X, Y, D) Joystick* ui##NAME;
 #define BUTTON(NAME, V, KEY, TITLE, X, Y, W, H) Button* ui##NAME;
 #define LED(NAME, V, TITLE, X, Y, D) Led* ui##NAME;
 #define SCREEN(NAME, TITLE, X, Y, W, H) Screen* ui##NAME;
