@@ -238,16 +238,16 @@ namespace DeUI {
 		return false;
 	}
 	void Joystick::save_json(ofJson& json) {
-		json[name + "X"] = valueX->value;
-		json[name + "Y"] = valueX->value;
+		// json[name + "X"] = valueX->value;
+		// json[name + "Y"] = valueY->value;
 	}
 	void Joystick::load_json(ofJson& json) {
-		if (!json[name + "X"].empty()) {
-			valueX->value = json[name + "X"];
-		}
-		if (!json[name + "Y"].empty()) {
-			valueY->value = json[name + "Y"];
-		}
+		// if (!json[name + "X"].empty()) {
+		// 	valueX->value = json[name + "X"];
+		// }
+		// if (!json[name + "Y"].empty()) {
+		// 	valueY->value = json[name + "Y"];
+		// }
 	}
 	void Joystick::store_last_value() {
 		valueX->store_last_value();
@@ -262,12 +262,14 @@ namespace DeUI {
 
 		// Current value
 		ofSetColor(255);
-		auto vec = value_to_vec();
-		ofDrawLine(pos, pos + vec * size.x);
+		auto vec = pos + value_to_vec() * (size.x / 2, size.y / 2);
+		ofDrawLine(pos, vec);
+		ofFill();
+		ofDrawCircle(vec, size.x / 12);
 	}
 	glm::vec2 Joystick::value_to_vec()
 	{
-		return glm::vec2(float(valueX->value) / maxval, float(valueY->value) / maxval);
+		return glm::vec2(float(valueX->value) / maxval, -float(valueY->value) / maxval);
 	}
 
 	bool Joystick::onEvent(const Event& event) {
@@ -284,7 +286,7 @@ namespace DeUI {
 		case EventType::mouseDragged:
 			if (click.clicked) {
 				const float faderRange = 100;
-				int vx = int(click.value - (event.pos.x - click.pos.x) * maxval / faderRange);
+				int vx = int(click.value + (event.pos.x - click.pos.x) * maxval / faderRange);
 				int vy = int(click.value - (event.pos.y - click.pos.y) * maxval / faderRange);
 				valueX->value = min(max(vx, -maxval), maxval);
 				valueY->value = min(max(vy, -maxval), maxval);
@@ -293,10 +295,9 @@ namespace DeUI {
 			break;
 		case EventType::mouseReleased:
 			if (click.clicked) {
-				// Send last value as 'dragged' event
-				Event ev = event;
-				ev.type = EventType::mouseDragged;
-				onEvent(ev);
+				// Return to zero value
+				valueX->value = 0;
+				valueY->value = 0;
 				click.clicked = false;
 				return true;
 			}
