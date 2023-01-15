@@ -87,8 +87,8 @@ namespace DeUI {
 			ev.pos /= scale_;
 
 			// On right mouse button output mouse coords
-			if (event.button == 2) {
-				cout << " mouse pos " << ev.pos.x << " " << ev.pos.y << endl;
+			if (event.button == 2 && event.type != EventType::mouseReleased) {
+				cout << "Mouse pos " << ev.pos.x << " " << ev.pos.y << endl;
 			}
 		}
 		for (auto c : controls_) {
