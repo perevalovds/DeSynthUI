@@ -108,13 +108,23 @@ namespace DeUI {
 		ofPushMatrix();
 		ofTranslate(transp_);
 		ofScale(scale_, scale_);
-		for (auto c : controls_) {
-			c->draw(font_);
-		}
 
-		ofSetColor(128);
-		ofNoFill();
+		ofSetColor(BackgroundColor_);
+		ofFill();
 		ofDrawRectangle(0, 0, W_, H_);
+		ofSetColor(PenColorSecondary_);
+		ofFill();
+
+		DrawData draw_data;
+		draw_data.font = &font_;
+		draw_data.BackgroundColor = BackgroundColor_;
+		draw_data.PenColor = PenColor_;
+		draw_data.PenColorSecondary = PenColorSecondary_;
+		draw_data.PenSelected = PenSelected_;
+
+		for (auto c : controls_) {
+			c->draw(draw_data);
+		}
 
 		ofPopMatrix();
 	}
@@ -159,7 +169,7 @@ namespace DeUI {
 		font.drawString(text, x - box.width / 2, y);
 	}
 
-	void Control::draw(Font& font) {
+	void Control::draw(DrawData& draw_data) {
 
 	}
 
@@ -181,23 +191,23 @@ namespace DeUI {
 		value->store_last_value();
 	}
 
-	void Fader::draw(Font& font) {
-		ofColor color = (click.clicked) ? ofColor(192, 192, 64) : ofColor(128);
+	void Fader::draw(DrawData& draw_data) {
+		ofColor color = (click.clicked) ? draw_data.PenSelected : draw_data.PenColorSecondary;
 		ofSetColor(color);
 		ofNoFill();
 		ofDrawEllipse(pos.x, pos.y, size.x, size.y);
-		font.draw(title, pos.x, pos.y - size.y / 2);
+		draw_data.font->draw(title, pos.x, pos.y - size.y / 2);
 
 		// Marks
 		float R1 = size.x / 2;
 		float R2 = R1 * 0.8;
-		ofSetColor(128);
+		ofSetColor(draw_data.PenColor);
 		for (int i = 0; i <= maxval; i++) {
 			auto vec = value_to_vec(i);
 			ofDrawLine(pos + vec * R1, pos + vec * R2);
 		}
 		// Current value
-		ofSetColor(255);
+		ofSetColor(draw_data.PenColor);
 		auto vec = value_to_vec(value->value);
 		ofDrawLine(pos, pos + vec * R2);
 	}
@@ -258,15 +268,15 @@ namespace DeUI {
 		valueX->store_last_value();
 		valueY->store_last_value();
 	}
-	void Joystick::draw(Font& font) {
-		ofColor color = (click.clicked) ? ofColor(192, 192, 64) : ofColor(128);
+	void Joystick::draw(DrawData& draw_data) {
+		ofColor color = (click.clicked) ? draw_data.PenSelected : draw_data.PenColorSecondary;
 		ofSetColor(color);
 		ofNoFill();
 		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
-		font.draw(title, pos.x, pos.y - size.y / 2);
+		draw_data.font->draw(title, pos.x, pos.y - size.y / 2);
 
 		// Current value
-		ofSetColor(255);
+		ofSetColor(draw_data.PenColor);
 		auto vec = pos + value_to_vec() * (size.x / 2, size.y / 2);
 		ofDrawLine(pos, vec);
 		ofFill();
@@ -313,17 +323,17 @@ namespace DeUI {
 		return false;
 	}
 
-	void Button::draw(Font& font) {
-		if (value->value == 1) {
+	void Button::draw(DrawData& draw_data) {
+		/*if (value->value == 1) {
 			ofSetColor(32, 32, 0);
 			ofFill();
 			ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
-		}
-		ofColor color = (value->value == 1) ? ofColor(192, 192, 64) : ofColor(128);
+		}*/
+		ofColor color = (value->value == 1) ? draw_data.PenSelected : draw_data.PenColorSecondary;
 		ofSetColor(color);
 		ofNoFill();
 		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
-		font.draw(title, pos.x, pos.y, true);
+		draw_data.font->draw(title, pos.x, pos.y, true);
 	}
 	bool Button::onEvent(const Event& event)
 	{
@@ -360,28 +370,29 @@ namespace DeUI {
 		return false;
 	}
 
-	void Led::draw(Font& font) {
+	void Led::draw(DrawData& draw_data) {
 		if (value->value == 1) {
-			ofSetColor(128, 128, 0);
+			ofSetColor(draw_data.PenSelected);
 			ofFill();
 			ofDrawEllipse(pos.x, pos.y, size.x / 2, size.y / 2);
 		}
 
-		ofSetColor(128);
+		ofSetColor(draw_data.PenColorSecondary);
 		ofNoFill();
 		ofDrawEllipse(pos.x, pos.y, size.x, size.y);
-		font.draw(title, pos.x, pos.y - size.y / 2);
+		draw_data.font->draw(title, pos.x, pos.y - size.y / 2);
 	}
 
-	void Screen::draw(Font& font) {
+	void Screen::draw(DrawData& draw_data) {
 		if (image_.isAllocated()) {
 			ofSetColor(255);
+			image_.getTextureReference().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
 			image_.draw(pos.x, pos.y, size.x, size.y);
 		}
-		ofSetColor(128);
+		ofSetColor(draw_data.PenColorSecondary);
 		ofNoFill();
 		ofDrawRectangle(pos.x - 1, pos.y - 1, size.x + 2, size.y + 2);
-		font.draw(title, pos.x + size.x / 2, pos.y - 1);
+		draw_data.font->draw(title, pos.x + size.x / 2, pos.y - 1);
 	}
 	ofRectangle Screen::rect()
 	{
@@ -391,6 +402,11 @@ namespace DeUI {
 	void Screen::set_image_grayscale(unsigned char* image, int w, int h)
 	{
 		image_.setFromPixels(image, w, h, OF_IMAGE_GRAYSCALE);
+	}
+
+	void Screen::set_image_rgb(unsigned char* image, int w, int h)
+	{
+		image_.setFromPixels(image, w, h, OF_IMAGE_COLOR);
 	}
 	//--------------------------------------------------------------
 }

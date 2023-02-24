@@ -13,7 +13,7 @@
 namespace DeUI {
 	class UI;
 	struct ValueInt {
-		int value = 0;
+		int value = 0;	// value from control
 		int value_prev = 0;
 		void store_last_value() { value_prev = value; }
 		bool changed() const { return value != value_prev; }
@@ -58,6 +58,13 @@ namespace DeUI {
 		glm::vec2 pos;
 		glm::vec2 size;
 	};
+	struct DrawData {
+		Font* font = nullptr;
+		ofColor BackgroundColor;
+		ofColor PenColor;
+		ofColor PenColorSecondary;
+		ofColor PenSelected;
+	};
 	class Control {
 	public:
 		Control(ControlData data);
@@ -67,7 +74,7 @@ namespace DeUI {
 		string title;
 		glm::vec2 pos;
 		glm::vec2 size;
-		virtual void draw(Font& font);
+		virtual void draw(DrawData& draw_data);
 		virtual ofRectangle rect();
 		virtual bool onEvent(const Event& event) { return false; }
 		virtual void save_json(ofJson& json) {}
@@ -94,7 +101,7 @@ namespace DeUI {
 		Fader(ControlData data, ValueInt* Value, int Max) 
 			: ControlWithValue(data, Value, true), maxval(Max) {}
 		virtual ~Fader() {}
-		virtual void draw(Font& font);
+		virtual void draw(DrawData& draw_data);
 		int maxval = 10;
 		glm::vec2 value_to_vec(int v);
 		virtual bool onEvent(const Event& event);
@@ -109,7 +116,7 @@ namespace DeUI {
 		virtual void save_json(ofJson& json);
 		virtual void load_json(ofJson& json);
 		virtual void store_last_value();
-		virtual void draw(Font& font);
+		virtual void draw(DrawData& draw_data);
 		virtual bool onEvent(const Event& event);
 
 		ValueInt* valueX = nullptr;
@@ -123,7 +130,7 @@ namespace DeUI {
 		Button(ControlData data, ValueInt* Value, int Key)
 			: ControlWithValue(data, Value, false), key(Key) {}
 		virtual ~Button() {}
-		virtual void draw(Font& font);
+		virtual void draw(DrawData& draw_data);
 		int key = 0;
 		virtual bool onEvent(const Event& event);
 		bool clicked = false;
@@ -133,15 +140,16 @@ namespace DeUI {
 		Led(ControlData data, ValueInt* Value) 
 			: ControlWithValue(data, Value, false) {}
 		virtual ~Led() {}
-		virtual void draw(Font& font);
+		virtual void draw(DrawData& draw_data);
 	};
 	class Screen : public Control {
 	public:
 		Screen(ControlData data) : Control(data) {}
 		virtual ~Screen() {}
-		virtual void draw(Font& font);
+		virtual void draw(DrawData& draw_data);
 		virtual ofRectangle rect();
 		void set_image_grayscale(unsigned char* image, int w, int h);
+		void set_image_rgb(unsigned char* image, int w, int h);
 	protected:
 		ofImage image_;
 	};
@@ -179,6 +187,12 @@ namespace DeUI {
 #define LED(NAME, V, TITLE, X, Y, D) Led* ui##NAME;
 #define SCREEN(NAME, TITLE, X, Y, W, H) Screen* ui##NAME;
 #define PANEL_SIZE(Width, Height) float W_ = Width; float H_ = Height;
+#define	UI_COLORS(BackgroundColor, PenColor, PenColorSecondary, PenSelected) \
+  ofColor BackgroundColor_ = BackgroundColor; \
+  ofColor PenColor_ = PenColor; \
+  ofColor PenColorSecondary_ = PenColorSecondary; \
+  ofColor PenSelected_ = PenSelected;
+
 #include "DefUI.h"
 
 	protected:
