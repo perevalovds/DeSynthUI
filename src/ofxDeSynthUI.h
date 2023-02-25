@@ -65,6 +65,11 @@ namespace DeUI {
 		ofColor PenColorSecondary;
 		ofColor PenSelected;
 	};
+	enum class Shape : int {
+		None = 0,
+		Rectangle = 1,
+		Circle = 2
+	};
 	class Control {
 	public:
 		Control(ControlData data);
@@ -127,19 +132,27 @@ namespace DeUI {
 	};
 	class Button : public ControlWithValue {
 	public:
-		Button(ControlData data, ValueInt* Value, int Key)
-			: ControlWithValue(data, Value, false), key(Key) {}
+		Button(ControlData data, ValueInt* Value, int Key, Shape Shape0)
+			: ControlWithValue(data, Value, false), key(Key), shape(Shape0) {}
 		virtual ~Button() {}
 		virtual void draw(DrawData& draw_data);
 		int key = 0;
 		virtual bool onEvent(const Event& event);
 		bool clicked = false;
+		Shape shape = Shape::None;
 	};
 	class Led : public ControlWithValue {
 	public:
 		Led(ControlData data, ValueInt* Value) 
 			: ControlWithValue(data, Value, false) {}
 		virtual ~Led() {}
+		virtual void draw(DrawData& draw_data);
+	};
+	class Line : public Control {
+	public:
+		Line(ControlData data)
+			: Control(data) {}
+		virtual ~Line() {}
 		virtual void draw(DrawData& draw_data);
 	};
 	class Screen : public Control {
@@ -183,8 +196,9 @@ namespace DeUI {
 		// Components definitions
 #define FADER(NAME, V, TITLE, MAX, X, Y, D) Fader* ui##NAME;
 #define JOYSTICK(NAME, VX, VY, TITLE, MAX, X, Y, D) Joystick* ui##NAME;
-#define BUTTON(NAME, V, KEY, TITLE, X, Y, W, H) Button* ui##NAME;
+#define BUTTON(NAME, V, KEY, TITLE, X, Y, W, H, SHAPE) Button* ui##NAME;
 #define LED(NAME, V, TITLE, X, Y, D) Led* ui##NAME;
+#define DRAWLINE(NAME, X, Y, W, H) Line* ui##NAME;
 #define SCREEN(NAME, TITLE, X, Y, W, H) Screen* ui##NAME;
 #define PANEL_SIZE(Width, Height) float W_ = Width; float H_ = Height;
 #define	UI_COLORS(BackgroundColor, PenColor, PenColorSecondary, PenSelected) \

@@ -8,8 +8,9 @@ namespace DeUI {
 		// Components creation
 #define FADER(NAME, V, TITLE, MAX, X, Y, D) ui##NAME = new Fader(ControlData(this, #NAME, TITLE, X, Y, D, D), &V, MAX);
 #define JOYSTICK(NAME, VX, VY, TITLE, MAX, X, Y, D) ui##NAME = new Joystick(ControlData(this, #NAME, TITLE, X, Y, D, D), &VX, &VY, MAX);
-#define BUTTON(NAME, V, TITLE, KEY, X, Y, W, H) ui##NAME = new Button(ControlData(this, #NAME, TITLE, X, Y, W, H), &V, KEY);
+#define BUTTON(NAME, V, TITLE, KEY, X, Y, W, H, SHAPE) ui##NAME = new Button(ControlData(this, #NAME, TITLE, X, Y, W, H), &V, KEY, Shape::##SHAPE);
 #define LED(NAME, V, TITLE, X, Y, D) ui##NAME = new Led(ControlData(this, #NAME, TITLE, X, Y, D, D), &V);
+#define DRAWLINE(NAME, X, Y, W, H) ui##NAME = new Line(ControlData(this, #NAME, "", X, Y, W, H));
 #define SCREEN(NAME, TITLE, X, Y, W, H) ui##NAME = new Screen(ControlData(this, #NAME, TITLE, X, Y, W, H));
 
 #include "DefUI.h"
@@ -165,7 +166,7 @@ namespace DeUI {
 	{
 		ofSetColor(color);
 		auto box = font.getStringBoundingBox(text, 0, 0);
-		y = (centerY) ? y - box.y / 2 : y - shiftY;
+		y = (centerY) ? y + box.y / 2 : y - shiftY;
 		font.drawString(text, x - box.width / 2, y);
 	}
 
@@ -196,7 +197,7 @@ namespace DeUI {
 		ofSetColor(color);
 		ofNoFill();
 		ofDrawEllipse(pos.x, pos.y, size.x, size.y);
-		draw_data.font->draw(title, pos.x, pos.y - size.y / 2);
+		draw_data.font->draw(title, pos.x, pos.y + size.y / 2);
 
 		// Marks
 		float R1 = size.x / 2;
@@ -273,7 +274,8 @@ namespace DeUI {
 		ofSetColor(color);
 		ofNoFill();
 		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
-		draw_data.font->draw(title, pos.x, pos.y - size.y / 2);
+		ofDrawEllipse(pos.x, pos.y, size.x, size.y);
+		draw_data.font->draw(title, pos.x, pos.y + size.y / 2);
 
 		// Current value
 		ofSetColor(draw_data.PenColor);
@@ -332,8 +334,11 @@ namespace DeUI {
 		ofColor color = (value->value == 1) ? draw_data.PenSelected : draw_data.PenColorSecondary;
 		ofSetColor(color);
 		ofNoFill();
-		ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
-		draw_data.font->draw(title, pos.x, pos.y, true);
+		if (shape == Shape::Rectangle)
+			ofDrawRectangle(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
+		if (shape == Shape::Circle)
+			ofDrawEllipse(pos.x, pos.y, size.x, size.y);
+		draw_data.font->draw(title, pos.x, pos.y + size.y / 2);
 	}
 	bool Button::onEvent(const Event& event)
 	{
@@ -380,7 +385,14 @@ namespace DeUI {
 		ofSetColor(draw_data.PenColorSecondary);
 		ofNoFill();
 		ofDrawEllipse(pos.x, pos.y, size.x, size.y);
-		draw_data.font->draw(title, pos.x, pos.y - size.y / 2);
+		draw_data.font->draw(title, pos.x, pos.y + size.y / 2);
+	}
+
+	void Line::draw(DrawData& draw_data)
+	{
+		ofSetColor(draw_data.PenColorSecondary);
+		ofNoFill();
+		ofDrawLine(pos.x, pos.y, pos.x + size.x, pos.y + size.y);
 	}
 
 	void Screen::draw(DrawData& draw_data) {
